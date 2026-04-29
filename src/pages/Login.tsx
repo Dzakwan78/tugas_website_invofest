@@ -1,14 +1,30 @@
 import Button from "../components/ui/Button";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuthStore } from "../store/useAuthStore";
 
 export default function Login() {
   const navigate = useNavigate();
+  const login = useAuthStore((state) => state.login);
 
   const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    alert("Login berhasil!");
-    navigate("/"); //  arahkan ke beranda
-  };
+  e.preventDefault();
+
+  const emailInput = (e.target as HTMLFormElement)[0] as HTMLInputElement;
+  const passwordInput = (e.target as HTMLFormElement)[1] as HTMLInputElement;
+
+  const email = emailInput.value;
+  const password = passwordInput.value;
+
+  //  VALIDASI
+  if (!email || !password) {
+    alert("Email dan password harus diisi!");
+    return; 
+  }
+
+  login(email); 
+  alert("Login berhasil!");
+  navigate("/dashboard", { replace: true });
+};
 
   return (
     <div className="min-h-[calc(100vh-80px)] flex items-center justify-center bg-gray-100 px-4">
@@ -30,8 +46,17 @@ export default function Login() {
           </h1>
 
           <form onSubmit={handleLogin} className="flex flex-col gap-4">
-            <input type="email" placeholder="Email" className="border p-3 rounded-lg" />
-            <input type="password" placeholder="Password" className="border p-3 rounded-lg" />
+            <input
+              type="email"
+              placeholder="Email"
+              className="border p-3 rounded-lg"
+            />
+
+            <input
+              type="password"
+              placeholder="Password"
+              className="border p-3 rounded-lg"
+            />
 
             <Button label="Masuk" variant="primary" />
 

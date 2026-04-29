@@ -1,5 +1,5 @@
 {
-  "name": "tugas_3",
+  "name": "tugas_4",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -18,7 +18,8 @@
     "react-hook-form": "^7.73.1",
     "react-router-dom": "^7.14.1",
     "tailwindcss": "^4.2.3",
-    "zod": "^4.3.6"
+    "zod": "^4.3.6",
+    "zustand": "^5.0.12"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",
