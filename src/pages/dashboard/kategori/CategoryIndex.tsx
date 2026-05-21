@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 
+// ===== SERVICE =====
+// PERBAIKAN: Menghapus sub-path ganda agar sesuai dengan routing Express di Vercel
 const BASE_URL = "https://backend-invofest-taupe.vercel.app/categories";
 
 type Category = {
@@ -123,7 +125,7 @@ export default function CategoryIndex() {
                 <td className="px-4 py-3.5">
                   <div className="flex gap-2">
                     <Link
-                      to={`/dashboard/kategori/edit/${item.id}`} // ← Mengarah ke rute edit kustom
+                      to={`/dashboard/kategori/edit/${item.id}`}
                       className="text-xs font-semibold px-3 py-1.5 rounded-md border border-yellow-300 bg-yellow-50 text-yellow-700 hover:bg-yellow-100 transition-colors"
                     >
                       Edit
