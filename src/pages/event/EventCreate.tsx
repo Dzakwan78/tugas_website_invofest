@@ -64,16 +64,18 @@ export default function EventCreate() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: data.name,
-          dateevent: data.date,
+          dateEvent: data.date,
           location: data.location,
           categoryId: Number(data.categoryId),
           pembicaraId: Number(data.pembicaraId), // ← PERBAIKAN 5: Kirim key pembicaraId ke controller
           description: data.description,
         }),
       });
+
       if (!res.ok) throw new Error("Gagal");
       alert("Event berhasil dibuat!");
       navigate("/dashboard/event");
+      
     } catch (error) {
       console.error(error);
       alert("Gagal membuat event. Cek koneksi ke server.");
