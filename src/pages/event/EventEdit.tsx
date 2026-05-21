@@ -4,11 +4,8 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate, useParams } from "react-router-dom";
 
-// PERBAIKAN: Menghubungkan endpoint langsung ke backend Vercel yang live
 const BASE_URL = "https://backend-invofest-taupe.vercel.app/events";
 const CATEGORY_URL = "https://backend-invofest-taupe.vercel.app/categories";
-
-type Category = { id: number; nama: string };
 
 const schema = z.object({
   name: z.string().min(3, "Nama event minimal 3 karakter"),
@@ -19,11 +16,13 @@ const schema = z.object({
 });
 
 type FormData = z.infer<typeof schema>;
+type Category = { id: number; nama: string };
 
 export default function EventEdit() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [categories, setCategories] = useState<Category[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const {
     register,
@@ -33,46 +32,63 @@ export default function EventEdit() {
   } = useForm<FormData>({ resolver: zodResolver(schema) });
 
   useEffect(() => {
-    // Ambil kategori & data event bersamaan
-    Promise.all([
-      fetch(CATEGORY_URL).then((r) => r.json()),
-      fetch(`${BASE_URL}/${id}`).then((r) => r.json()),
-    ])
-      .then(([cats, event]) => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        // Fetch terpisah supaya lebih aman
+        const resCat = await fetch(CATEGORY_URL);
+        const resEvent = await fetch(`${BASE_URL}/${id}`);
+        
+        if (!resCat.ok || !resEvent.ok) throw new Error("Data gagal dimuat");
+
+        const cats = await resCat.json();
+        const event = await resEvent.json();
+
         setCategories(cats);
+        
+        // Memastikan tanggal tidak undefined
+        const dateFormatted = event.dateEvent 
+          ? new Date(event.dateEvent).toISOString().split("T")[0] 
+          : "";
+
         reset({
           name: event.name,
           categoryId: String(event.categoryId),
-          date: new Date(event.dateEvent).toISOString().split("T")[0],
+          date: dateFormatted,
           location: event.location,
           description: event.description,
         });
-      })
-      .catch(() => {
+      } catch (err) {
+        console.error(err);
         alert("Gagal memuat data event.");
         navigate("/dashboard/event");
-      });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
   }, [id, navigate, reset]);
+
+  if (isLoading) return <div className="text-center mt-10">Memuat data...</div>;
 
   const onSubmit = async (data: FormData) => {
     try {
       const res = await fetch(`${BASE_URL}/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        // PERBAIKAN: Menyamakan key body request dengan skema Prisma backend (dateEvent & location)
         body: JSON.stringify({
           name: data.name,
           dateEvent: data.date,
           location: data.location,
           categoryId: Number(data.categoryId),
+          pembicaraId: 1, // HATI-HATI: Sesuaikan dengan id pembicara yang ada
           description: data.description,
         }),
       });
-      if (!res.ok) throw new Error("Gagal");
+      if (!res.ok) throw new Error("Gagal update");
       alert("Event berhasil diupdate!");
       navigate("/dashboard/event");
-    } catch (error) {
-      console.error(error);
+    } catch {
       alert("Gagal mengupdate event.");
     }
   };
@@ -80,7 +96,6 @@ export default function EventEdit() {
   return (
     <div className="max-w-xl mx-auto mt-10 p-6 border rounded-xl shadow bg-white">
       <h1 className="text-2xl font-bold mb-4 text-[#7B1D3F]">Edit Event</h1>
-
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
         <input {...register("name")} placeholder="Nama Event" className="border p-3 rounded-lg" />
         {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
@@ -91,32 +106,14 @@ export default function EventEdit() {
             <option key={cat.id} value={cat.id}>{cat.nama}</option>
           ))}
         </select>
-        {errors.categoryId && <p className="text-red-500 text-sm">{errors.categoryId.message}</p>}
-
+        
         <input type="date" {...register("date")} className="border p-3 rounded-lg" />
-        {errors.date && <p className="text-red-500 text-sm">{errors.date.message}</p>}
+        <input {...register("location")} placeholder="Lokasi" className="border p-3 rounded-lg" />
+        <textarea {...register("description")} placeholder="Deskripsi" className="border p-3 rounded-lg" />
 
-        <input {...register("location")} placeholder="Lokasi Event" className="border p-3 rounded-lg" />
-        {errors.location && <p className="text-red-500 text-sm">{errors.location.message}</p>}
-
-        <textarea {...register("description")} placeholder="Deskripsi Event" className="border p-3 rounded-lg" />
-        {errors.description && <p className="text-red-500 text-sm">{errors.description.message}</p>}
-
-        <div className="flex gap-3">
-          <button
-            type="button"
-            onClick={() => navigate("/dashboard/event")}
-            className="flex-1 border border-gray-300 text-gray-600 py-3 rounded-lg hover:bg-gray-50 transition"
-          >
-            Batal
-          </button>
-          <button
-            disabled={isSubmitting}
-            className="flex-1 bg-[#7B1D3F] hover:bg-[#9e2550] text-white py-3 rounded-lg font-semibold disabled:opacity-50"
-          >
-            {isSubmitting ? "Menyimpan..." : "Simpan Perubahan"}
-          </button>
-        </div>
+        <button disabled={isSubmitting} className="bg-[#7B1D3F] text-white py-3 rounded-lg">
+          {isSubmitting ? "Menyimpan..." : "Simpan Perubahan"}
+        </button>
       </form>
     </div>
   );
