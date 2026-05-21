@@ -59,7 +59,7 @@ export default function DashboardLayout() {
       </aside>
 
       {/* CONTENT */}
-      <main className="flex-1 p-8 overflow-y-auto">
+      <main className="flex-1 p-9 overflow-y-auto">
         <div className="max-w-7xl mx-auto">
           <Outlet />
         </div>
