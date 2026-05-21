@@ -27,6 +27,7 @@ import Biodata from "./pages/dashboard/biodata/Biodata";
 
 // ROUTE PROTECT
 import ProtectedRoute from "./route/ProtectedRoute";
+import EventEdit from "./pages/event/EventEdit";
 
 function App() {
   return (
@@ -65,6 +66,7 @@ function App() {
           {/* MODUL EVENT */}
           <Route path="event" element={<EventIndex />} />
           <Route path="event/create" element={<EventCreate />} />
+          <Route path="event/edit/:id" element={<EventEdit />} />
           
           {/* MODUL BIODATA */}
           <Route path="biodata" element={<Biodata />} />
