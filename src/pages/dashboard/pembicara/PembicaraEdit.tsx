@@ -5,7 +5,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate, useParams } from "react-router-dom";
 
 // ===== SERVICE =====
-const BASE_URL = "http://localhost:3000/pembicara";
+// PERBAIKAN: Mengubah URL lokal ke URL Backend Vercel yang sudah live
+const BASE_URL = "https://backend-invofest-taupe.vercel.app/pembicara";
 
 type PembicaraPayload = {
   name: string;

@@ -4,8 +4,9 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate, useParams } from "react-router-dom";
 
-const BASE_URL = "http://localhost:3000/events";
-const CATEGORY_URL = "http://localhost:3000/categories";
+// PERBAIKAN: Menghubungkan endpoint langsung ke backend Vercel yang live
+const BASE_URL = "https://backend-invofest-taupe.vercel.app/events";
+const CATEGORY_URL = "https://backend-invofest-taupe.vercel.app/categories";
 
 type Category = { id: number; nama: string };
 
@@ -58,11 +59,12 @@ export default function EventEdit() {
       const res = await fetch(`${BASE_URL}/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
+        // PERBAIKAN: Menyamakan key body request dengan skema Prisma backend (dateEvent & location)
         body: JSON.stringify({
           name: data.name,
-          tanggal: data.date,
-          lokasi: data.location,
-          categoryId: data.categoryId,
+          dateEvent: data.date,
+          location: data.location,
+          categoryId: Number(data.categoryId),
           description: data.description,
         }),
       });

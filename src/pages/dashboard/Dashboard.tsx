@@ -109,7 +109,7 @@ function SpeakerListItem({ item, index, isLast }: { item: SpeakerItem; index: nu
 }
 
 // ===== MAIN DASHBOARD =====
-// eslint-disable-next-line react-refresh/only-export-components
+
 export default function Dashboard() {
   const [stats, setStats] = useState<Stat[]>([
     { title: "Kategori", value: 0, icon: "🗂️" },
