@@ -115,7 +115,7 @@ export default function Dashboard() {
     { title: "Kategori", value: 0, icon: "🗂️" },
     { title: "Event", value: 0, icon: "📅" },
     { title: "Pembicara", value: 0, icon: "🎤" },
-    { title: "Total Data", value: 0, icon: "📊" }, // Pengganti Event Aktif agar lebih relevan dengan tabel kamu
+    { title: "Total Data Masuk", value: 0, icon: "📊" }, // Pengganti Event Aktif agar lebih relevan dengan tabel kamu
   ]);
 
   const [latestEvents, setLatestEvents] = useState<EventItem[]>([]);
