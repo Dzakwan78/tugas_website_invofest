@@ -64,10 +64,10 @@ export default function EventCreate() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: data.name,
-          tanggal: data.date,
-          lokasi: data.location,
-          categoryId: data.categoryId,
-          pembicaraId: data.pembicaraId, // ← PERBAIKAN 5: Kirim key pembicaraId ke controller
+          dateevent: data.date,
+          location: data.location,
+          categoryId: Number(data.categoryId),
+          pembicaraId: Number(data.pembicaraId), // ← PERBAIKAN 5: Kirim key pembicaraId ke controller
           description: data.description,
         }),
       });
