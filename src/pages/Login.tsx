@@ -54,7 +54,7 @@ export default function Login() {
             {/* INPUT NIM */}
             <div>
               <input
-                type="text"
+                type="24009009"
                 className="w-full border border-gray-400 p-3.5 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#7B1D3F]/20 placeholder-gray-400"
                 placeholder="NIM"
                 value={nim}
@@ -65,7 +65,7 @@ export default function Login() {
             {/* INPUT NAMA */}
             <div>
               <input
-                type="text"
+                type="Eka Dzakwan Venarindra"
                 className="w-full border border-gray-400 p-3.5 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#7B1D3F]/20 placeholder-gray-400"
                 placeholder="Nama Lengkap"
                 value={nama}
