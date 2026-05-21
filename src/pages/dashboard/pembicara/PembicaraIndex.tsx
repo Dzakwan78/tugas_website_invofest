@@ -2,7 +2,6 @@ import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 // ===== SERVICE =====
-// PERBAIKAN: Menghapus sub-path ganda agar sesuai dengan routing Express di Vercel
 const BASE_URL = "https://backend-invofest-taupe.vercel.app/pembicara";
 
 type Pembicara = {
@@ -37,7 +36,7 @@ function Avatar({ name }: { name: string }) {
     .toUpperCase();
 
   return (
-    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#7B1D3F] to-[#c9395e] text-white text-xs font-bold flex items-center justify-center">
+    <div className="w-9 h-9 rounded-full bg-linear-to-br from-[#7B1D3F] to-[#c9395e] text-white text-xs font-bold flex items-center justify-center">
       {initials}
     </div>
   );
