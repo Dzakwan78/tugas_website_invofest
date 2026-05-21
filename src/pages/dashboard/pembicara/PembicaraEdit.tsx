@@ -1,7 +1,10 @@
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useNavigate, useParams } from "react-router-dom";
 
+// ===== SERVICE =====
 const BASE_URL = "http://localhost:3000/pembicara";
 
 type PembicaraPayload = {
@@ -13,16 +16,23 @@ type PembicaraPayload = {
   status: string;
 };
 
-const createPembicara = async (data: PembicaraPayload) => {
-  const res = await fetch(BASE_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-  if (!res.ok) throw new Error("Gagal menyimpan pembicara");
+const getPembicaraById = async (id: number): Promise<PembicaraPayload> => {
+  const res = await fetch(`${BASE_URL}/${id}`);
+  if (!res.ok) throw new Error("Pembicara tidak ditemukan");
   return res.json();
 };
 
+const updatePembicara = async (id: number, data: PembicaraPayload) => {
+  const res = await fetch(`${BASE_URL}/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error("Gagal mengupdate pembicara");
+  return res.json();
+};
+
+// ===== SCHEMA =====
 const schema = z.object({
   name: z.string().min(3, "Nama minimal 3 karakter"),
   role: z.string().min(3, "Role minimal 3 karakter"),
@@ -34,7 +44,11 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
-export default function PembicaraCreate() {
+// ===== COMPONENT =====
+export default function PembicaraEdit() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
@@ -44,20 +58,34 @@ export default function PembicaraCreate() {
     resolver: zodResolver(schema),
   });
 
+  // Ambil data existing lalu isi ke form
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getPembicaraById(Number(id));
+        reset(data); // ← isi form dengan data yang sudah ada
+      } catch {
+        alert("Pembicara tidak ditemukan.");
+        navigate("/dashboard/pembicara");
+      }
+    };
+    fetchData();
+  }, [id, navigate, reset]);
+
   const onSubmit = async (data: FormData) => {
     try {
-      await createPembicara(data);
-      alert("Pembicara berhasil ditambahkan!");
-      reset();
+      await updatePembicara(Number(id), data);
+      alert("Pembicara berhasil diupdate!");
+      navigate("/dashboard/pembicara");
     } catch (error) {
-      alert("Gagal menyimpan pembicara. Cek koneksi ke server.");
+      alert("Gagal mengupdate pembicara. Cek koneksi ke server.");
       console.error(error);
     }
   };
 
   return (
     <div className="max-w-xl mx-auto mt-10 p-6 border rounded-xl shadow">
-      <h1 className="text-2xl font-bold mb-4">Tambah Pembicara</h1>
+      <h1 className="text-2xl font-bold mb-4">Edit Pembicara</h1>
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
         <input {...register("name")} placeholder="Nama" className="border p-2 rounded" />
@@ -81,12 +109,22 @@ export default function PembicaraCreate() {
         </select>
         {errors.status && <p className="text-red-500">{errors.status.message}</p>}
 
-        <button
-          disabled={isSubmitting}
-          className="bg-red-600 text-white py-2 rounded disabled:opacity-50"
-        >
-          {isSubmitting ? "Menyimpan..." : "Simpan"}
-        </button>
+        <div className="flex gap-3">
+          <button
+            type="button"
+            onClick={() => navigate("/dashboard/pembicara")}
+            className="flex-1 border border-gray-300 text-gray-600 py-2 rounded hover:bg-gray-50 transition"
+          >
+            Batal
+          </button>
+
+          <button
+            disabled={isSubmitting}
+            className="flex-1 bg-red-600 text-white py-2 rounded disabled:opacity-50"
+          >
+            {isSubmitting ? "Menyimpan..." : "Simpan Perubahan"}
+          </button>
+        </div>
       </form>
     </div>
   );

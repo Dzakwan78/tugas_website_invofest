@@ -1,11 +1,66 @@
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 
-const events = [
-  { id: 1, name: "Seminar AI", category: "Seminar", date: "2026-01-10", status: "Aktif" },
-  { id: 2, name: "Workshop React", category: "Workshop", date: "2026-02-15", status: "Nonaktif" },
-];
+// ===== SERVICE =====
+const BASE_URL = "http://localhost:3000/events";
 
+// PERBAIKAN 1: Sesuaikan tipe data dengan skema asli Prisma & Controller Backend
+type Event = {
+  id: number;
+  name: string;
+  location: string;
+  dateEvent: string;
+  description: string;
+  category?: {
+    id: number;
+    nama: string;
+  };
+};
+
+const getAllEvents = async (): Promise<Event[]> => {
+  const res = await fetch(BASE_URL);
+  if (!res.ok) throw new Error("Gagal mengambil data event");
+  return res.json();
+};
+
+const deleteEvent = async (id: number) => {
+  const res = await fetch(`${BASE_URL}/${id}`, { method: "DELETE" });
+  if (!res.ok) throw new Error("Gagal menghapus event");
+  return res.json();
+};
+
+// ===== COMPONENT =====
 export default function EventIndex() {
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const data = await getAllEvents();
+      setEvents(data);
+    } catch {
+      setError("Gagal memuat data event.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const handleDelete = async (id: number) => {
+    if (!confirm("Yakin ingin menghapus event ini?")) return;
+    try {
+      await deleteEvent(id);
+      setEvents((prev) => prev.filter((e) => e.id !== id));
+    } catch {
+      alert("Gagal menghapus event.");
+    }
+  };
+
   return (
     <div className="px-7 py-8 max-w-5xl mx-auto">
 
@@ -36,7 +91,8 @@ export default function EventIndex() {
         <table className="w-full border-collapse">
           <thead>
             <tr className="bg-gray-50 border-b border-gray-100">
-              {["No", "Nama Event", "Kategori", "Tanggal", "Status", "Aksi"].map((h) => (
+              {/* PERBAIKAN 2: Menghapus kolom "Status" karena tidak ada di schema.prisma */}
+              {["No", "Nama Event", "Kategori", "Tanggal", "Aksi"].map((h) => (
                 <th
                   key={h}
                   className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 px-4 py-2.5 text-left whitespace-nowrap"
@@ -48,7 +104,31 @@ export default function EventIndex() {
           </thead>
 
           <tbody>
-            {events.map((item, index) => (
+            {loading && (
+              <tr>
+                <td colSpan={5} className="text-center py-10 text-gray-400 text-sm">
+                  Memuat data...
+                </td>
+              </tr>
+            )}
+
+            {!loading && error && (
+              <tr>
+                <td colSpan={5} className="text-center py-10 text-red-400 text-sm">
+                  {error}
+                </td>
+              </tr>
+            )}
+
+            {!loading && !error && events.length === 0 && (
+              <tr>
+                <td colSpan={5} className="text-center py-10 text-gray-400 text-sm">
+                  Belum ada event.
+                </td>
+              </tr>
+            )}
+
+            {!loading && !error && events.map((item, index) => (
               <tr
                 key={item.id}
                 className="border-b border-gray-50 hover:bg-rose-50/40 transition-colors"
@@ -61,12 +141,13 @@ export default function EventIndex() {
 
                 <td className="px-4 py-3.5">
                   <span className="text-xs font-medium bg-rose-50 text-[#7B1D3F] px-2.5 py-1 rounded-full">
-                    {item.category}
+                    {/* PERBAIKAN 3: Membaca properti nama dari objek relasi category */}
+                    {item.category?.nama || "Tanpa Kategori"}
                   </span>
                 </td>
 
                 <td className="px-4 py-3.5 text-sm text-gray-500">
-                  {new Date(item.date).toLocaleDateString("id-ID", {
+                  {new Date(item.dateEvent).toLocaleDateString("id-ID", {
                     day: "numeric",
                     month: "long",
                     year: "numeric",
@@ -74,23 +155,17 @@ export default function EventIndex() {
                 </td>
 
                 <td className="px-4 py-3.5">
-                  <span
-                    className={`text-xs font-semibold px-3 py-1 rounded-full ${
-                      item.status === "Aktif"
-                        ? "bg-emerald-50 text-emerald-700"
-                        : "bg-red-50 text-red-700"
-                    }`}
-                  >
-                    {item.status === "Aktif" ? "● Aktif" : "● Nonaktif"}
-                  </span>
-                </td>
-
-                <td className="px-4 py-3.5">
                   <div className="flex gap-2">
-                    <button className="text-xs font-semibold px-3 py-1.5 rounded-md border border-yellow-300 bg-yellow-50 text-yellow-700 hover:bg-yellow-100 transition-colors cursor-pointer">
+                    <Link
+                      to={`/dashboard/event/edit/${item.id}`}
+                      className="text-xs font-semibold px-3 py-1.5 rounded-md border border-yellow-300 bg-yellow-50 text-yellow-700 hover:bg-yellow-100 transition-colors"
+                    >
                       Edit
-                    </button>
-                    <button className="text-xs font-semibold px-3 py-1.5 rounded-md border border-red-200 bg-red-50 text-red-700 hover:bg-red-100 transition-colors cursor-pointer">
+                    </Link>
+                    <button
+                      onClick={() => handleDelete(item.id)}
+                      className="text-xs font-semibold px-3 py-1.5 rounded-md border border-red-200 bg-red-50 text-red-700 hover:bg-red-100 transition-colors cursor-pointer"
+                    >
                       Hapus
                     </button>
                   </div>

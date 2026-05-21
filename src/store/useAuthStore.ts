@@ -1,33 +1,28 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
 
-interface AuthState {
+type AuthState = {
   isAuthenticated: boolean;
-  user: string | null;
-  login: (username?: string) => void;
+  nim: string | null;
+  nama: string | null;
+  login: (nim: string, nama: string) => void;
   logout: () => void;
-}
+};
 
-export const useAuthStore = create<AuthState>()(
-  persist(
-    (set) => ({
-      isAuthenticated: false,
-      user: null,
+export const useAuthStore = create<AuthState>((set) => ({
+  // Cek apakah sebelumnya sudah ada sesi login di localStorage
+  isAuthenticated: localStorage.getItem("isAuthenticated") === "true",
+  nim: localStorage.getItem("user_nim"),
+  nama: localStorage.getItem("user_nama"),
 
-      login: (username) =>
-        set({
-          isAuthenticated: true,
-          user: username || "Guest",
-        }),
+  login: (nim, nama) => {
+    localStorage.setItem("isAuthenticated", "true");
+    localStorage.setItem("user_nim", nim);
+    localStorage.setItem("user_nama", nama);
+    set({ isAuthenticated: true, nim, nama });
+  },
 
-      logout: () =>
-        set({
-          isAuthenticated: false,
-          user: null,
-        }),
-    }),
-    {
-      name: "auth-storage",
-    }
-  )
-);
+  logout: () => {
+    localStorage.clear();
+    set({ isAuthenticated: false, nim: null, nama: null });
+  },
+}));

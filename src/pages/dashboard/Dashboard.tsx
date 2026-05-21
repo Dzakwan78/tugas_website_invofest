@@ -1,3 +1,11 @@
+import { useEffect, useState } from "react";
+
+// ===== ENDPOINTS =====
+const EVENTS_URL = "http://localhost:3000/events";
+const CATEGORIES_URL = "http://localhost:3000/categories";
+const PEMBICARA_URL = "http://localhost:3000/pembicara";
+
+// ===== TYPES =====
 type Stat = {
   title: string;
   value: number;
@@ -5,35 +13,19 @@ type Stat = {
 };
 
 type EventItem = {
+  id: number;
   name: string;
-  category: string;
-  date: string;
+  dateEvent: string;
+  category?: { nama: string };
 };
 
 type SpeakerItem = {
+  id: number;
   name: string;
-  job: string;
+  role: string; // Sesuaikan dengan skema database 'role'
 };
 
-const stats: Stat[] = [
-  { title: "Kategori", value: 10, icon: "🗂️" },
-  { title: "Event", value: 25, icon: "📅" },
-  { title: "Pembicara", value: 8, icon: "🎤" },
-  { title: "Event Aktif", value: 5, icon: "✅" },
-];
-
-const latestEvents: EventItem[] = [
-  { name: "Seminar AI 2025", category: "Seminar", date: "10 Jan 2026" },
-  { name: "Workshop UI/UX", category: "Workshop", date: "15 Feb 2026" },
-  { name: "Talkshow Startup", category: "Talkshow", date: "20 Mar 2026" },
-];
-
-const latestSpeakers: SpeakerItem[] = [
-  { name: "Danang Avan M", job: "UI/UX Designer" },
-  { name: "Lhuqita Fazry", job: "Software Engineer" },
-  { name: "M. Dendi Purwanto", job: "Product Manager" },
-];
-
+// ===== COMPONENTS =====
 function StatCard({ stat }: { stat: Stat }) {
   return (
     <div className="bg-white rounded-2xl shadow-md p-6 flex flex-col gap-4 hover:shadow-lg transition">
@@ -64,32 +56,26 @@ function SectionHeader({ title }: { title: string }) {
 
 function EventListItem({ item, isLast }: { item: EventItem; isLast: boolean }) {
   return (
-    <li
-      className={`flex items-center justify-between py-4 ${
-        isLast ? "" : "border-b border-gray-100"
-      }`}
-    >
+    <li className={`flex items-center justify-between py-4 ${isLast ? "" : "border-b border-gray-100"}`}>
       <div>
         <p className="font-semibold text-[#1a0a10]">{item.name}</p>
-        <p className="text-sm text-gray-400">{item.date}</p>
+        <p className="text-sm text-gray-400">
+          {new Date(item.dateEvent).toLocaleDateString("id-ID", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+          })}
+        </p>
       </div>
 
       <span className="text-sm bg-rose-100 text-[#7B1D3F] px-3 py-1 rounded-full font-medium">
-        {item.category}
+        {item.category?.nama || "Umum"}
       </span>
     </li>
   );
 }
 
-function SpeakerListItem({
-  item,
-  index,
-  isLast,
-}: {
-  item: SpeakerItem;
-  index: number;
-  isLast: boolean;
-}) {
+function SpeakerListItem({ item, index, isLast }: { item: SpeakerItem; index: number; isLast: boolean }) {
   const initials = item.name
     .split(" ")
     .map((n) => n[0])
@@ -104,13 +90,9 @@ function SpeakerListItem({
   ];
 
   return (
-    <li
-      className={`flex items-center gap-4 py-4 ${
-        isLast ? "" : "border-b border-gray-100"
-      }`}
-    >
+    <li className={`flex items-center gap-4 py-4 ${isLast ? "" : "border-b border-gray-100"}`}>
       <div
-        className={`w-10 h-10 rounded-full bg-gradient-to-brown ${
+        className={`w-10 h-10 rounded-full bg-linear-to-r ${
           colors[index % colors.length]
         } text-white text-sm font-bold flex items-center justify-center`}
       >
@@ -119,13 +101,67 @@ function SpeakerListItem({
 
       <div>
         <p className="font-semibold text-[#1a0a10]">{item.name}</p>
-        <p className="text-sm text-gray-400">{item.job}</p>
+        <p className="text-sm text-gray-400">{item.role}</p> {/* Menggunakan role */}
       </div>
     </li>
   );
 }
 
+// ===== MAIN DASHBOARD =====
 export default function Dashboard() {
+  const [stats, setStats] = useState<Stat[]>([
+    { title: "Kategori", value: 0, icon: "🗂️" },
+    { title: "Event", value: 0, icon: "📅" },
+    { title: "Pembicara", value: 0, icon: "🎤" },
+    { title: "Total Data", value: 0, icon: "📊" }, // Pengganti Event Aktif agar lebih relevan dengan tabel kamu
+  ]);
+
+  const [latestEvents, setLatestEvents] = useState<EventItem[]>([]);
+  const [latestSpeakers, setLatestSpeakers] = useState<SpeakerItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        setLoading(true);
+        
+        // Ambil ketiga data dari backend secara paralel
+        const [resEvents, resCategories, resSpeakers] = await Promise.all([
+          fetch(EVENTS_URL),
+          fetch(CATEGORIES_URL),
+          fetch(PEMBICARA_URL),
+        ]);
+
+        const eventsData: EventItem[] = await resEvents.json();
+        const categoriesData = await resCategories.json();
+        const speakersData: SpeakerItem[] = await resSpeakers.json();
+
+        // 1. Set Counter Box Statistik berdasarkan panjang array (.length) data asli
+        setStats([
+          { title: "Kategori", value: categoriesData.length, icon: "🗂️" },
+          { title: "Event", value: eventsData.length, icon: "📅" },
+          { title: "Pembicara", value: speakersData.length, icon: "🎤" },
+          { title: "Total Modul", value: categoriesData.length + eventsData.length + speakersData.length, icon: "📊" },
+        ]);
+
+        // 2. Ambil maksimal 3 data terbaru saja untuk ditaruh di list bawah
+        setLatestEvents(eventsData.slice(0, 3));
+        setLatestSpeakers(speakersData.slice(0, 3));
+
+      } catch (error) {
+        console.error("Gagal memuat statistik dashboard:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
+
+  if (loading) {
+    return <div className="text-center mt-20 text-gray-400 text-sm">Memuat ringkasan dashboard...</div>;
+  }
+
   return (
     <div className="px-10 py-10 w-full space-y-10">
 
@@ -138,52 +174,55 @@ export default function Dashboard() {
           </span>
         </div>
 
-        <h1 className="text-3xl font-bold text-[#1a0a10]">
-          Dashboard
-        </h1>
-
-        <p className="text-gray-400 mt-2">
-          Ringkasan data Invofest hari ini
-        </p>
+        <h1 className="text-3xl font-bold text-[#1a0a10]">Dashboard</h1>
+        <p className="text-gray-400 mt-2">Ringkasan data Invofest hari ini secara real-time</p>
       </div>
 
-      {/* STATS */}
+      {/* STATS COUNTER BOX */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat) => (
           <StatCard key={stat.title} stat={stat} />
         ))}
       </div>
 
-      {/* CONTENT */}
+      {/* BOTTOM CONTENT LIST */}
       <div className="grid lg:grid-cols-2 gap-8">
 
-        {/* EVENT */}
+        {/* LATEST EVENTS COLUMN */}
         <div className="bg-white rounded-2xl shadow-md p-6">
           <SectionHeader title="Event Terbaru" />
-          <ul>
-            {latestEvents.map((item, i) => (
-              <EventListItem
-                key={item.name}
-                item={item}
-                isLast={i === latestEvents.length - 1}
-              />
-            ))}
-          </ul>
+          {latestEvents.length === 0 ? (
+            <p className="text-sm text-gray-400 text-center py-6">Belum ada data event</p>
+          ) : (
+            <ul>
+              {latestEvents.map((item, i) => (
+                <EventListItem
+                  key={item.id}
+                  item={item}
+                  isLast={i === latestEvents.length - 1}
+                />
+              ))}
+            </ul>
+          )}
         </div>
 
-        {/* SPEAKER */}
+        {/* LATEST SPEAKERS COLUMN */}
         <div className="bg-white rounded-2xl shadow-md p-6">
           <SectionHeader title="Pembicara Terbaru" />
-          <ul>
-            {latestSpeakers.map((item, i) => (
-              <SpeakerListItem
-                key={item.name}
-                item={item}
-                index={i}
-                isLast={i === latestSpeakers.length - 1}
-              />
-            ))}
-          </ul>
+          {latestSpeakers.length === 0 ? (
+            <p className="text-sm text-gray-400 text-center py-6">Belum ada data pembicara</p>
+          ) : (
+            <ul>
+              {latestSpeakers.map((item, i) => (
+                <SpeakerListItem
+                  key={item.id}
+                  item={item}
+                  index={i}
+                  isLast={i === latestSpeakers.length - 1}
+                />
+              ))}
+            </ul>
+          )}
         </div>
 
       </div>

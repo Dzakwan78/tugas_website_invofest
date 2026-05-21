@@ -1,48 +1,63 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+const BASE_URL = "http://localhost:3000/categories";
+
 export default function CategoryCreate() {
-  const [name, setName] = useState("");
+  const [nama, setNama] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!name) {
+    if (!nama.trim()) {
       alert("Nama kategori wajib diisi!");
       return;
     }
 
-    alert(`Kategori "${name}" berhasil ditambahkan!`);
+    try {
+      setIsSubmitting(true);
+      const res = await fetch(BASE_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nama }), // ← Menggunakan key 'nama' sesuai backend & prisma
+      });
 
-    // setelah submit balik ke index
-    navigate("/dashboard/kategori");
+      if (!res.ok) throw new Error("Gagal menyimpan kategori");
+
+      alert(`Kategori "${nama}" berhasil ditambahkan!`);
+      navigate("/dashboard/kategori");
+    } catch (error) {
+      console.error(error);
+      alert("Gagal menambahkan data ke server.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold mb-6">Tambah Kategori</h1>
+    <div className="max-w-xl mx-auto mt-10 p-6 border rounded-xl shadow bg-white">
+      <h1 className="text-2xl font-bold mb-6 text-[#7B1D3F]">Tambah Kategori</h1>
 
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white p-6 rounded shadow max-w-md"
-      >
-        <div className="mb-4">
-          <label className="block text-sm mb-2">Nama Kategori</label>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <div>
+          <label className="block text-sm font-medium mb-2 text-gray-700">Nama Kategori</label>
           <input
             type="text"
-            className="w-full border p-2 rounded"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Masukkan nama kategori"
+            className="w-full border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#7B1D3F]/20"
+            value={nama}
+            onChange={(e) => setNama(e.target.value)}
+            placeholder="Masukkan nama kategori (contoh: Seminar, Workshop)"
           />
         </div>
 
         <button
           type="submit"
-          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+          disabled={isSubmitting}
+          className="bg-[#7B1D3F] hover:bg-[#9e2550] text-white py-3 rounded-lg font-semibold transition-colors disabled:opacity-50"
         >
-          Simpan
+          {isSubmitting ? "Menyimpan..." : "Simpan Kategori"}
         </button>
       </form>
     </div>

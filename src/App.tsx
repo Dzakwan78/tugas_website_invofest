@@ -17,10 +17,13 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/dashboard/Dashboard";
 import CategoryIndex from "./pages/dashboard/kategori/CategoryIndex";
 import CategoryCreate from "./pages/dashboard/kategori/CategoryCreate";
+import CategoryEdit from "./pages/dashboard/kategori/CategoryEdit"; // ← 1. IMPORT FILE EDIT KATEGORI DI SINI
 import PembicaraIndex from "./pages/dashboard/pembicara/PembicaraIndex";
 import PembicaraCreate from "./pages/dashboard/pembicara/PembicaraCreate";
 import EventIndex from "./pages/event/EventIndex";
 import EventCreate from "./pages/event/EventCreate";
+import PembicaraEdit from "./pages/dashboard/pembicara/PembicaraEdit";
+import Biodata from "./pages/dashboard/biodata/Biodata";
 
 // ROUTE PROTECT
 import ProtectedRoute from "./route/ProtectedRoute";
@@ -48,12 +51,23 @@ function App() {
         {/* 📊 DASHBOARD (TANPA HEADER ATAS) */}
         <Route path="/dashboard" element={<DashboardLayout />}>
           <Route index element={<Dashboard />} />
+          
+          {/* MODUL KATEGORI */}
           <Route path="kategori" element={<CategoryIndex />} />
           <Route path="kategori/create" element={<CategoryCreate />} />
+          <Route path="kategori/edit/:id" element={<CategoryEdit />} /> {/* ← 2. DAFTARKAN RUTE EDIT DI SINI */}
+          
+          {/* MODUL PEMBICARA */}
           <Route path="pembicara" element={<PembicaraIndex />} />
           <Route path="pembicara/create" element={<PembicaraCreate />} />
-          <Route path="/dashboard/event" element={<EventIndex />} />
-          <Route path="/dashboard/event/create" element={<EventCreate />} />
+          <Route path="pembicara/edit/:id" element={<PembicaraEdit />} />
+          
+          {/* MODUL EVENT */}
+          <Route path="event" element={<EventIndex />} />
+          <Route path="event/create" element={<EventCreate />} />
+          
+          {/* MODUL BIODATA */}
+          <Route path="biodata" element={<Biodata />} />
         </Route>
 
       </Route>

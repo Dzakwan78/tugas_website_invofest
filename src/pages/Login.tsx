@@ -1,72 +1,96 @@
-import Button from "../components/ui/Button";
-import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
 
 export default function Login() {
-  const navigate = useNavigate();
+  const [nim, setNim] = useState("");
+  const [nama, setNama] = useState("");
+  const [error, setError] = useState("");
   const login = useAuthStore((state) => state.login);
+  const navigate = useNavigate();
 
   const handleLogin = (e: React.FormEvent) => {
-  e.preventDefault();
+    e.preventDefault();
+    setError("");
 
-  const emailInput = (e.target as HTMLFormElement)[0] as HTMLInputElement;
-  const passwordInput = (e.target as HTMLFormElement)[1] as HTMLInputElement;
+    if (!nim.trim() || !nama.trim()) {
+      setError("NIM dan Nama Lengkap wajib diisi!");
+      return;
+    }
 
-  const email = emailInput.value;
-  const password = passwordInput.value;
-
-  //  VALIDASI
-  if (!email || !password) {
-    alert("Email dan password harus diisi!");
-    return; 
-  }
-
-  login(email); 
-  alert("Login berhasil!");
-  navigate("/dashboard", { replace: true });
-};
+    // Eksekusi login ke Zustand Store
+    login(nim, nama);
+    
+    alert(`Selamat datang kembali, ${nama}!`);
+    navigate("/dashboard");
+  };
 
   return (
-    <div className="min-h-[calc(100vh-80px)] flex items-center justify-center bg-gray-100 px-4">
-      <div className="bg-white rounded-xl shadow-md overflow-hidden flex max-w-4xl w-full">
-
-        {/* LEFT */}
-        <div className="hidden md:flex w-1/2 bg-gradient-to-brown from-red-100 to-red-200 items-center justify-center p-6">
-          <img
-            src="https://www.invofest-harkatnegeri.com/assets/Maskot-Hero.png"
-            alt="login"
-            className="w-72"
+    <div className="min-h-screen flex items-center justify-center bg-white px-4 lg:px-20">
+      <div className="max-w-5xl w-full grid md:grid-cols-2 gap-8 items-center">
+        
+        {/* SISI KIRI: MASKOT ROBOT INVOFEST */}
+        <div className="flex justify-center items-center">
+          <img 
+            src="https://www.invofest-harkatnegeri.com/assets/Maskot-Hero.png" // ← Sesuaikan dengan jalur file/asset maskot robot kamu
+            alt="Invofest Mascot" 
+            className="w-full max-w-sm lg:max-w-md object-contain"
           />
         </div>
 
-        {/* RIGHT */}
-        <div className="w-full md:w-1/2 p-8">
-          <h1 className="text-2xl font-bold text-red-900 text-center mb-6">
-            Login
-          </h1>
+        {/* SISI KANAN: FORM LOGIN */}
+        <div className="w-full max-w-md mx-auto flex flex-col justify-center">
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold text-[#7B1D3F] tracking-wide">Login</h1>
+          </div>
 
-          <form onSubmit={handleLogin} className="flex flex-col gap-4">
-            <input
-              type="email"
-              placeholder="Email"
-              className="border p-3 rounded-lg"
-            />
+          {error && (
+            <div className="bg-red-50 text-red-600 p-3 rounded-xl text-xs mb-4 font-medium text-center border border-red-100">
+              {error}
+            </div>
+          )}
 
-            <input
-              type="password"
-              placeholder="Password"
-              className="border p-3 rounded-lg"
-            />
+          <form onSubmit={handleLogin} className="space-y-4">
+            {/* INPUT NIM */}
+            <div>
+              <input
+                type="text"
+                className="w-full border border-gray-400 p-3.5 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#7B1D3F]/20 placeholder-gray-400"
+                placeholder="NIM"
+                value={nim}
+                onChange={(e) => setNim(e.target.value)}
+              />
+            </div>
 
-            <Button label="Masuk" variant="primary" />
+            {/* INPUT NAMA */}
+            <div>
+              <input
+                type="text"
+                className="w-full border border-gray-400 p-3.5 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#7B1D3F]/20 placeholder-gray-400"
+                placeholder="Nama Lengkap"
+                value={nama}
+                onChange={(e) => setNama(e.target.value)}
+              />
+            </div>
 
-            <p className="text-sm text-center text-gray-600">
+            {/* TOMBOL MASUK */}
+            <button
+              type="submit"
+              className="w-full bg-[#7B1D3F] hover:bg-[#631732] text-white py-3.5 rounded-xl font-bold transition text-sm tracking-wide shadow-sm mt-2"
+            >
+              Masuk
+            </button>
+          </form>
+
+          {/* FOOTER REGISTRASI */}
+          <div className="text-center mt-6">
+            <p className="text-xs text-gray-500">
               Belum punya akun?{" "}
-              <Link to="/register" className="text-red-900 font-semibold">
+              <Link to="/register" className="text-[#7B1D3F] font-semibold hover:underline">
                 Registrasi Sekarang
               </Link>
             </p>
-          </form>
+          </div>
         </div>
 
       </div>
