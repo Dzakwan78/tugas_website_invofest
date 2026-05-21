@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const BASE_URL = "http://localhost:3000/categories";
+const BASE_URL = "https://backend-invofest-taupe.vercel.app/categories";
 
 export default function CategoryCreate() {
   const [nama, setNama] = useState("");

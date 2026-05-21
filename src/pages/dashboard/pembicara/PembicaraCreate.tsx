@@ -2,7 +2,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-const BASE_URL = "http://localhost:3000/pembicara";
+const BASE_URL = "https://backend-invofest-taupe.vercel.app/pembicara";
 
 type PembicaraPayload = {
   name: string;
