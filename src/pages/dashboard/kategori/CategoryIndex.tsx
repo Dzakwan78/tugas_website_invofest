@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 
-const BASE_URL = "http://localhost:3000/categories";
+const BASE_URL = "https://backend-invofest-taupe.vercel.app/categories";
 
 type Category = {
   id: number;

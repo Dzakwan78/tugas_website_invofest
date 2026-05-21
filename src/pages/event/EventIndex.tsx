@@ -2,8 +2,7 @@ import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 // ===== SERVICE =====
-const BASE_URL = "http://localhost:3000/events";
-
+const BASE_URL = "https://backend-invofest-taupe.vercel.app/events";
 // PERBAIKAN 1: Sesuaikan tipe data dengan skema asli Prisma & Controller Backend
 type Event = {
   id: number;
