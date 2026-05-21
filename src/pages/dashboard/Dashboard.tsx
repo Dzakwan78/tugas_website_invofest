@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 
 // ===== ENDPOINTS =====
-const EVENTS_URL = "http://localhost:3000/events";
-const CATEGORIES_URL = "http://localhost:3000/categories";
-const PEMBICARA_URL = "http://localhost:3000/pembicara";
+// PERBAIKAN: Dialihkan dari localhost ke URL Vercel Backend yang sudah live
+const EVENTS_URL = "https://backend-invofest-taupe.vercel.app/events";
+const CATEGORIES_URL = "https://backend-invofest-taupe.vercel.app/categories";
+const PEMBICARA_URL = "https://backend-invofest-taupe.vercel.app/pembicara";
 
 // ===== TYPES =====
 type Stat = {
@@ -108,6 +109,7 @@ function SpeakerListItem({ item, index, isLast }: { item: SpeakerItem; index: nu
 }
 
 // ===== MAIN DASHBOARD =====
+// eslint-disable-next-line react-refresh/only-export-components
 export default function Dashboard() {
   const [stats, setStats] = useState<Stat[]>([
     { title: "Kategori", value: 0, icon: "🗂️" },
@@ -130,6 +132,7 @@ export default function Dashboard() {
           fetch(EVENTS_URL),
           fetch(CATEGORIES_URL),
           fetch(PEMBICARA_URL),
+          
         ]);
 
         const eventsData: EventItem[] = await resEvents.json();
