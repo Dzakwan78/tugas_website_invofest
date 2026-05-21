@@ -144,7 +144,7 @@ export default function Dashboard() {
           { title: "Kategori", value: categoriesData.length, icon: "🗂️" },
           { title: "Event", value: eventsData.length, icon: "📅" },
           { title: "Pembicara", value: speakersData.length, icon: "🎤" },
-          { title: "Total Modul", value: categoriesData.length + eventsData.length + speakersData.length, icon: "📊" },
+          { title: "Total Data Modul", value: categoriesData.length + eventsData.length + speakersData.length, icon: "📊" },
         ]);
 
         // 2. Ambil maksimal 3 data terbaru saja untuk ditaruh di list bawah
