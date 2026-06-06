@@ -17,6 +17,7 @@ export default function DashboardLayout() {
     { name: "Event", path: "/dashboard/event", icon: CalendarDays },
     { name: "Pembicara", path: "/dashboard/pembicara", icon: Users },
     { name: "Biodata", path: "/dashboard/biodata", icon: FileText },
+    { name: "User", path: "/dashboard/user", icon: Users },
   ];
 
   return (

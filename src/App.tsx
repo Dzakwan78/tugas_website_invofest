@@ -24,6 +24,9 @@ import EventIndex from "./pages/event/EventIndex";
 import EventCreate from "./pages/event/EventCreate";
 import PembicaraEdit from "./pages/dashboard/pembicara/PembicaraEdit";
 import Biodata from "./pages/dashboard/biodata/Biodata";
+import UserIndex from "./pages/user/UserIndex"; // ← 1. IMPORT FILE EDIT USER DI SINI
+import UserCreate from "./pages/user/UserCreate"; // ← 2. IMPORT FILE EDIT USER DI SINI
+import UserEdit from "./pages/user/UserEdit"; // ← 2. IMPORT FILE EDIT USER DI SINI
 
 // ROUTE PROTECT
 import ProtectedRoute from "./route/ProtectedRoute";
@@ -70,6 +73,11 @@ function App() {
           
           {/* MODUL BIODATA */}
           <Route path="biodata" element={<Biodata />} />
+          
+          {/* MODUL USER */}
+          <Route path="user" element={<UserIndex />} />
+          <Route path="user/create" element={<UserCreate />} />
+          <Route path="user/edit/:id" element={<UserEdit />} /> {/* ← 2. DAFTARKAN RUTE EDIT DI SINI */}
         </Route>
 
       </Route>
