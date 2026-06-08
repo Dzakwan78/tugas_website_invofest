@@ -6,7 +6,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 // ===== SERVICE =====
 // PERBAIKAN: Mengubah URL lokal ke URL Backend Vercel yang sudah live
-const BASE_URL = "https://backend-invofest-taupe.vercel.app/pembicara";
+const BASE_URL = "http://localhost:3000/pembicara"; // ← Pastikan ini sesuai dengan URL backend kamu, bisa juga menggunakan VITE_API_URL dari .env
 
 type PembicaraPayload = {
   name: string;

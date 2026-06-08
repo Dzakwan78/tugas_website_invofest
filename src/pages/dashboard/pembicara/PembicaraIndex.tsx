@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 // ===== SERVICE =====
-const BASE_URL = "https://backend-invofest-taupe.vercel.app/pembicara";
+const BASE_URL = "http://localhost:3000/pembicara"; // ← Pastikan ini sesuai dengan URL backend kamu, bisa juga menggunakan VITE_API_URL dari .env
 
 type Pembicara = {
   id: number;

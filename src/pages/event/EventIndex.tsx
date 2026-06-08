@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 
 // ===== SERVICE =====
 // PERBAIKAN: Mengubah URL lokal ke URL Backend Vercel yang sudah live
-const BASE_URL = "https://backend-invofest-taupe.vercel.app/events";
+const BASE_URL = "http://localhost:3000/events";
 
 // PERBAIKAN 1: Sesuaikan tipe data dengan skema asli Prisma & Controller Backend
 type Event = {

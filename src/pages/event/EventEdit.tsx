@@ -4,8 +4,8 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate, useParams } from "react-router-dom";
 
-const BASE_URL = "https://backend-invofest-taupe.vercel.app/events";
-const CATEGORY_URL = "https://backend-invofest-taupe.vercel.app/categories";
+const BASE_URL = "http://localhost:3000/events"; // ← Pastikan ini sesuai dengan URL backend kamu, bisa juga menggunakan VITE_API_URL dari .env
+const CATEGORY_URL = "http://localhost:3000/categories"; // ← Pastikan ini sesuai dengan URL backend kamu, bisa juga menggunakan VITE_API_URL dari .env
 
 const schema = z.object({
   name: z.string().min(3, "Nama event minimal 3 karakter"),

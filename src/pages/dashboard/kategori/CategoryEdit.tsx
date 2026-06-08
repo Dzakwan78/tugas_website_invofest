@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 // PERBAIKAN: Mengubah URL lokal ke URL Backend Vercel yang sudah live
-const BASE_URL = "https://backend-invofest-taupe.vercel.app/categories";
+const BASE_URL = "http://localhost:3000/categories"; // ← Pastikan ini sesuai dengan URL backend kamu, bisa juga menggunakan VITE_API_URL dari .env
 
 export default function CategoryEdit() {
   const { id } = useParams<{ id: string }>();
