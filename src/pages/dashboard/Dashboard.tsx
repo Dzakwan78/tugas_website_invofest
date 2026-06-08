@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 
 // ===== ENDPOINTS =====
 // PERBAIKAN: Dialihkan dari localhost ke URL Vercel Backend yang sudah live
-const EVENTS_URL = "https://backend-invofest-taupe.vercel.app/events";
-const CATEGORIES_URL = "https://backend-invofest-taupe.vercel.app/categories";
-const PEMBICARA_URL = "https://backend-invofest-taupe.vercel.app/pembicara";
+const EVENTS_URL = "http://localhost:3000/events"; // ← Pastikan ini sesuai dengan URL backend kamu, bisa juga menggunakan VITE_API_URL dari .env
+const CATEGORIES_URL = "http://localhost:3000/categories"; // ← Pastikan ini sesuai dengan URL backend kamu
+const PEMBICARA_URL = "http://localhost:3000/pembicara"; // ← Pastikan ini sesuai dengan URL backend kamu
 
 // ===== TYPES =====
 type Stat = {
